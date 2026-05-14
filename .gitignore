@@ -5,3 +5,4 @@ build/
 *.pyc
 notes.json
 tests/tmp/
+quicknotes/__pycache__/

@@ -1,18 +1,24 @@
 # QuickNotes CLI
 
-QuickNotes CLI is a tiny open-source command-line note manager written in Python.
+QuickNotes CLI is a lightweight open-source command-line note manager written in Python.
 
 It lets you:
 
 - add timestamped notes
-- list saved notes
+- edit saved notes
+- list saved notes with sorting and tag filters
 - search notes by keyword
+- archive and restore notes
+- pin important notes
 - remove notes by ID
+- export notes to JSON or text
 
 ## Features
 
 - zero third-party dependencies
 - stores data in a local JSON file
+- tags, pinning, archiving, and note statistics
+- modular code structure with a service layer and CLI layer
 - works on Windows, macOS, and Linux
 
 ## Usage
@@ -26,18 +32,30 @@ py app.py <command> [arguments]
 Examples:
 
 ```bash
-py app.py add "Buy milk"
-py app.py add "Draft project README"
-py app.py list
-py app.py search README
+py app.py add "Buy milk" --tags personal,errands --pin
+py app.py add "Draft project README" --tags work,docs
+py app.py list --sort updated
+py app.py search README --tag docs
+py app.py edit 2 "Draft polished project README" --tags work,docs,priority
+py app.py archive 1
+py app.py restore 1
+py app.py stats
+py app.py export notes-export.txt --active-only
 py app.py remove 1
 ```
 
 ## Commands
 
-- `add <text>`: create a note
-- `list`: show all notes
-- `search <keyword>`: find matching notes
+- `add <text> [--tags a,b] [--pin]`: create a note
+- `list [--all] [--tag tag] [--sort created|updated]`: show notes
+- `search <keyword> [--all] [--tag tag]`: find matching notes
+- `edit <id> <text> [--tags a,b]`: update a note
+- `archive <id>`: archive a note
+- `restore <id>`: restore an archived note
+- `pin <id>`: pin a note
+- `unpin <id>`: unpin a note
+- `stats`: show aggregate note statistics
+- `export <path> [--active-only]`: export notes to `.json` or `.txt`
 - `remove <id>`: delete a note by numeric ID
 
 ## Data file
