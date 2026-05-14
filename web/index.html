@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>QuickNotes Web</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">QuickNotes</p>
+          <h1>Notes</h1>
+        </div>
+        <div class="stats-strip" id="stats-panel"></div>
+      </header>
+
+      <main class="layout">
+        <section class="composer-panel">
+          <div class="section-heading">
+            <h2>Create note</h2>
+          </div>
+          <form id="note-form" class="note-form">
+            <label>
+              <span>Text</span>
+              <textarea id="note-text" placeholder="Capture an idea, task, or reminder." required></textarea>
+            </label>
+            <label>
+              <span>Tags</span>
+              <input id="note-tags" type="text" placeholder="work, ideas, urgent" />
+            </label>
+            <label class="checkbox-row">
+              <input id="note-pin" type="checkbox" />
+              <span>Pin this note</span>
+            </label>
+            <button type="submit" class="primary-button">Save note</button>
+          </form>
+        </section>
+
+        <section class="workspace-panel">
+          <div class="workspace-toolbar">
+            <div class="section-heading">
+              <h2>Workspace</h2>
+            </div>
+            <div class="filters">
+              <input id="search-input" type="search" placeholder="Search text or tags" />
+              <input id="tag-filter" type="text" placeholder="Filter by tag" />
+              <select id="sort-select">
+                <option value="updated">Sort by updated</option>
+                <option value="created">Sort by created</option>
+              </select>
+              <label class="checkbox-row compact">
+                <input id="show-archived" type="checkbox" />
+                <span>Show archived</span>
+              </label>
+            </div>
+          </div>
+
+          <div id="notes-list" class="notes-grid"></div>
+        </section>
+      </main>
+    </div>
+
+    <template id="note-template">
+      <article class="note-card">
+        <div class="note-meta">
+          <span class="note-id"></span>
+          <div class="flag-row"></div>
+        </div>
+        <textarea class="note-editor"></textarea>
+        <input class="tag-editor" type="text" />
+        <div class="timestamp-row"></div>
+        <div class="action-row">
+          <button class="save-button">Save</button>
+          <button class="pin-button secondary-button">Pin</button>
+          <button class="archive-button secondary-button">Archive</button>
+          <button class="delete-button danger-button">Delete</button>
+        </div>
+      </article>
+    </template>
+
+    <script src="/app.js"></script>
+  </body>
+  </html>

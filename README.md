@@ -1,6 +1,6 @@
 # QuickNotes CLI
 
-QuickNotes CLI is a lightweight open-source command-line note manager written in Python.
+QuickNotes CLI is a lightweight open-source note manager written in Python with both a command-line interface and a local web UI.
 
 It lets you:
 
@@ -18,8 +18,30 @@ It lets you:
 - zero third-party dependencies
 - stores data in a local JSON file
 - tags, pinning, archiving, and note statistics
-- modular code structure with a service layer and CLI layer
+- modular code structure with service, CLI, and web layers
 - works on Windows, macOS, and Linux
+
+## Web Interface
+
+Start the local web app with:
+
+```bash
+py app.py web
+```
+
+Then open:
+
+```text
+http://127.0.0.1:8000
+```
+
+The web interface supports:
+
+- creating notes
+- editing text and tags inline
+- pinning and archiving from the browser
+- searching and filtering
+- viewing live statistics
 
 ## Usage
 
@@ -41,6 +63,7 @@ py app.py archive 1
 py app.py restore 1
 py app.py stats
 py app.py export notes-export.txt --active-only
+py app.py web --port 8080
 py app.py remove 1
 ```
 
@@ -56,6 +79,7 @@ py app.py remove 1
 - `unpin <id>`: unpin a note
 - `stats`: show aggregate note statistics
 - `export <path> [--active-only]`: export notes to `.json` or `.txt`
+- `web [--host 127.0.0.1] [--port 8000]`: run the local web interface
 - `remove <id>`: delete a note by numeric ID
 
 ## Data file

@@ -4,6 +4,7 @@ import unittest
 from contextlib import redirect_stdout
 from io import StringIO
 from pathlib import Path
+from unittest import mock
 
 
 class QuickNotesCliTests(unittest.TestCase):
@@ -21,9 +22,11 @@ class QuickNotesCliTests(unittest.TestCase):
         self.app = importlib.reload(app)
         import quicknotes.cli
         import quicknotes.core
+        import quicknotes.web
 
         self.cli = importlib.reload(quicknotes.cli)
         self.core = importlib.reload(quicknotes.core)
+        self.web = importlib.reload(quicknotes.web)
         self.service = self.core.NoteService()
 
     def tearDown(self) -> None:
@@ -127,13 +130,54 @@ class QuickNotesCliTests(unittest.TestCase):
 
     def test_cli_edit_command_updates_note(self) -> None:
         self.service.add_note("Initial")
+        buffer = StringIO()
 
-        exit_code = self.cli.main(["edit", "1", "Updated", "copy", "--tags", "docs,final"])
+        with redirect_stdout(buffer):
+            exit_code = self.cli.main(["edit", "1", "Updated", "copy", "--tags", "docs,final"])
         notes = self.service.list_notes()
 
         self.assertEqual(exit_code, 0)
         self.assertEqual(notes[0].text, "Updated copy")
         self.assertEqual(notes[0].tags, ["docs", "final"])
+
+    def test_cli_web_command_invokes_server(self) -> None:
+        with mock.patch("quicknotes.cli.run_web_server") as mocked_server:
+            exit_code = self.cli.main(["web", "--host", "0.0.0.0", "--port", "9000"])
+
+        self.assertEqual(exit_code, 0)
+        mocked_server.assert_called_once_with(host="0.0.0.0", port=9000)
+
+    def test_web_handler_exposes_stats_api(self) -> None:
+        self.service.add_note("Alpha", tags=["work"])
+
+        handler = self.web.QuickNotesWebHandler
+        handler.service = self.service
+
+        class DummySocket:
+            def makefile(self, *args, **kwargs):
+                return None
+
+        from io import BytesIO
+
+        request_bytes = b"GET /api/stats HTTP/1.1\r\nHost: localhost\r\n\r\n"
+        response_stream = BytesIO()
+        request_stream = BytesIO(request_bytes)
+
+        request_handler = handler.__new__(handler)
+        request_handler.rfile = request_stream
+        request_handler.wfile = response_stream
+        request_handler.raw_requestline = request_stream.readline()
+        request_handler.error_code = request_handler.error_message = None
+        request_handler.client_address = ("127.0.0.1", 12345)
+        request_handler.server = None
+        request_handler.connection = DummySocket()
+
+        self.assertTrue(request_handler.parse_request())
+        request_handler.do_GET()
+
+        body = response_stream.getvalue().split(b"\r\n\r\n", 1)[1]
+        payload = json.loads(body.decode("utf-8"))
+        self.assertEqual(payload["total"], 1)
 
 
 if __name__ == "__main__":

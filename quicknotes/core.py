@@ -21,6 +21,9 @@ class Note:
     pinned: bool = False
     archived: bool = False
 
+    def to_dict(self) -> dict:
+        return asdict(self)
+
 
 class NoteStore:
     def __init__(self, db_path: Path | None = None) -> None:

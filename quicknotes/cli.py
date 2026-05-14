@@ -4,6 +4,7 @@ import argparse
 from pathlib import Path
 
 from quicknotes.core import Note, NoteService
+from quicknotes.web import run_web_server
 
 
 def parse_tags(raw_tags: str | None) -> list[str]:
@@ -65,6 +66,10 @@ def build_parser() -> argparse.ArgumentParser:
     export_parser = subparsers.add_parser("export", help="Export notes to a file")
     export_parser.add_argument("path", help="Output path ending in .json or .txt")
     export_parser.add_argument("--active-only", action="store_true", help="Export active notes only")
+
+    web_parser = subparsers.add_parser("web", help="Run the local web interface")
+    web_parser.add_argument("--host", default="127.0.0.1", help="Host to bind the web server")
+    web_parser.add_argument("--port", default=8000, type=int, help="Port to bind the web server")
 
     return parser
 
@@ -195,6 +200,10 @@ def main(argv: list[str] | None = None) -> int:
                 include_archived=not args.active_only,
             )
             print(f"Exported notes to {exported}.")
+            return 0
+
+        if args.command == "web":
+            run_web_server(host=args.host, port=args.port)
             return 0
     except ValueError as exc:
         print(f"Error: {exc}.")
